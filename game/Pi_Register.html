@@ -1,6 +1,7 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>ピッとレジ</title>
 <meta name="claude:viewport-fit-sides" content="cover">
+<meta name="format-detection" content="telephone=no">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Zen+Maru+Gothic:wght@500;700;900&display=swap" rel="stylesheet">
@@ -274,16 +275,16 @@ h2.big{margin:0;font-family:var(--font-display);font-weight:400;font-size:34px;l
 /* ---------- controls scale with the screen, up to a sensible cap ---------- */
 .panel{display:flex;flex-direction:column}
 #panelItems,#panelPay{flex:0 0 auto}
-#btnFlow{flex:0 0 auto;height:clamp(56px,9vh,76px);font-size:clamp(18px,5vw,21px)}
-.picker{flex:0 0 auto;grid-auto-rows:clamp(54px,8.5vh,72px)}
+#btnFlow{flex:0 0 auto;height:clamp(56px,9vh,76px);height:clamp(56px,9dvh,76px);font-size:clamp(18px,5vw,21px)}
+.picker{flex:0 0 auto;grid-auto-rows:clamp(54px,8.5vh,72px);grid-auto-rows:clamp(54px,8.5dvh,72px)}
 .pick .e{font-size:clamp(22px,6vw,28px)}
 .pick .n{font-size:clamp(10px,3vw,12px)}
 .pick .p{font-size:clamp(9px,2.7vw,11px)}
-.methods{flex:0 0 auto;grid-auto-rows:clamp(48px,8vh,64px)}
+.methods{flex:0 0 auto;grid-auto-rows:clamp(48px,8vh,64px);grid-auto-rows:clamp(48px,8dvh,64px)}
 .method{font-size:clamp(13px,3.8vw,16px)}
 .method svg{width:clamp(22px,6vw,28px);height:clamp(22px,6vw,28px)}
 .terminal{flex:0 0 auto;display:flex;flex-direction:column}
-.term-screen{flex:0 0 auto;min-height:clamp(84px,14vh,120px);display:flex;align-items:center;font-size:clamp(16px,4.6vw,20px);padding:10px 14px}
+.term-screen{flex:0 0 auto;min-height:clamp(84px,14vh,120px);min-height:clamp(84px,14dvh,120px);display:flex;align-items:center;font-size:clamp(16px,4.6vw,20px);padding:10px 14px}
 .term-actions{flex:0 0 auto;align-content:flex-start}
 .term-actions:empty{display:none}
 .tbtn{font-size:clamp(15px,4.2vw,17px);max-height:56px}
@@ -295,7 +296,7 @@ h2.big{margin:0;font-family:var(--font-display);font-weight:400;font-size:34px;l
 .coupon-main{font-size:clamp(22px,6vw,26px)}
 .pay-total b{font-size:clamp(24px,7vw,30px)}
 .ex-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-.tbtn.ex{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;min-height:52px;height:clamp(52px,8vh,64px);max-height:64px;flex:none;padding:4px 6px;line-height:1.25}
+.tbtn.ex{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;min-height:52px;height:clamp(52px,8vh,64px);height:clamp(52px,8dvh,64px);max-height:64px;flex:none;padding:4px 6px;line-height:1.25}
 .tbtn.ex small{font-size:11px;font-weight:700;opacity:.85}
 .idcard{position:relative;min-width:0;display:grid;grid-template-columns:auto 1fr;gap:6px 12px;align-items:center;background:var(--surface);color:var(--ink);border:2px solid var(--ink);border-radius:10px;padding:22px 10px 8px}
 .idcard[hidden]{display:none}
@@ -307,17 +308,29 @@ h2.big{margin:0;font-family:var(--font-display);font-weight:400;font-size:34px;l
 .id-info dd{margin:0;min-width:0;font-weight:900;font-size:13px;overflow-wrap:anywhere}
 .tbtn.ex{position:relative}
 .ex-cnt{position:absolute;top:4px;right:6px;min-width:22px;height:20px;padding:0 5px;border-radius:99px;background:var(--tag);color:#111;font-style:normal;font-size:12px;font-weight:900;line-height:20px;text-align:center}
-.tbtn.ex{height:clamp(46px,7vh,58px);min-height:46px}
+.tbtn.ex{height:clamp(46px,7vh,58px);height:clamp(46px,7dvh,58px);min-height:46px}
 .coupon-cond{white-space:pre-line}
 #psMain{white-space:pre-line;font-size:clamp(18px,5vw,22px)}
 #psBox .coupon-actions{flex-wrap:wrap}
 #btnPs1,#btnPs2{height:auto;min-height:48px;max-height:none;line-height:1.3}
+/* ---------- wide & short screens (iPad landscape, desktop): belt on the left, controls on the right ---------- */
+@media (min-width:760px) and (min-aspect-ratio:5/4){
+  #app{max-width:1080px}
+  #game:not([hidden]){display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:auto auto auto 1fr;column-gap:12px;row-gap:8px}
+  #game > .hud{grid-column:1;grid-row:1}
+  #game > .stage{grid-column:1;grid-row:2}
+  #game > .lcd{grid-column:1;grid-row:3}
+  #game > .panel{grid-column:2;grid-row:1 / -1;min-height:0}
+}
+.jan-num{display:flex;gap:.6em}
+.jan-num span{display:inline-block}
+.tbtn.q4{flex:1 1 calc(50% - 6px)}
 </style>
 
 <div id="app">
   <section id="start" class="screen">
     <div class="brand">
-      <div class="jan" aria-hidden="true"><div class="jan-bars" id="janBars"></div><div class="jan-num">4 901234 567894</div></div>
+      <div class="jan" aria-hidden="true"><div class="jan-bars" id="janBars"></div><div class="jan-num"><span>4</span><span>901234</span><span>567894</span></div></div>
       <h1>ピッとレジ</h1>
       <p class="sub">スーパーのレジ係ゲーム</p>
     </div>
@@ -419,8 +432,8 @@ h2.big{margin:0;font-family:var(--font-display);font-weight:400;font-size:34px;l
           <div class="coupon-head"><span>ご希望</span><span id="exSub">袋・箸・スプーンなど</span></div>
           <div class="ex-grid" id="exGrid"></div>
           <div class="coupon-actions">
-            <button type="button" class="tbtn ghost" id="btnExReset">やり直し</button>
             <button type="button" class="tbtn" id="btnExOk">この内容で決定</button>
+            <button type="button" class="tbtn ghost" id="btnExReset">やり直し</button>
           </div>
         </div>
         <div class="coupon" id="couponBox" hidden>
@@ -1125,7 +1138,7 @@ function psAct(which) {
       PS.main.textContent = '「' + rs.text + '」';
       PS.cond.textContent = '理由を聞いて、怪しいと感じたら他の従業員に引き継いでください。問題なければ会計を進めます。';
       PS.info.textContent = '';
-      PS.b1.textContent = '怪しいので他の従業員に引き継ぐ'; PS.b2.textContent = 'スキャンに進む';
+      PS.b1.textContent = 'スキャンに進む'; PS.b2.textContent = '怪しいので他の従業員に引き継ぐ';
       say(rs.text); lcd('購入理由を聞きました');
     } else if (p.met) {                                  // conditions apply: skipping the question is a mistake
       miss('条件に当てはまるので、購入理由を確認する必要があります'); say('…', true);
@@ -1134,7 +1147,7 @@ function psAct(which) {
     }
     return;
   }
-  if (which === 1) {                                     // hand over to another staff member (nothing was scanned)
+  if (which === 2) {                                     // hand over to another staff member (nothing was scanned)
     if (!p.scam) { miss('不自然な点はありません。スキャンに進んでください'); say('えっ、普通に買いたいだけなんですけど…', true); return; }
     c.phase = 'done'; G.D.cust++; sfx.done();
     c.items.forEach(i => i.dom.remove()); c.items = [];
@@ -1272,9 +1285,9 @@ function ask(c, btns, text, cls, fixed) {
   return new Promise(resolve => {
     T.actions.replaceChildren();
     const order = btns.map((b, i) => [b, i]);
-    (fixed ? order : shuffle(order)).forEach(([b, i]) => {
+    order.forEach(([b, i]) => {
       const e = document.createElement('button');
-      e.type = 'button'; e.className = 'tbtn' + (b.cls ? ' ' + b.cls : ''); e.textContent = b.t; e.disabled = !!b.disabled;
+      e.type = 'button'; e.className = 'tbtn' + (b.cls ? ' ' + b.cls : (btns.length === 4 ? ' q4' : '')); e.textContent = b.t; e.disabled = !!b.disabled;   // 4 keys: 2 x 2, never 3 + 1
       e.addEventListener('click', () => {
         if (!alive(c)) return;
         if (b.wrong) { miss(b.why); return; }
@@ -1460,8 +1473,9 @@ async function takeCash(c, total, label) {
     await nap(c, 700);
     return;
   }
-  const lessC = shuffle([change - 100, change - 10, change - 500, change - 1000, change - 50].filter(v => v > 0)).slice(0, 2);
-  const moreC = shuffle([change + 100, change + 10, change + 500, change + 1000, change + 50]).slice(0, 3 - lessC.length);
+  // Fixed distractors (no randomness): two below, one above (more below/above if the change is tiny).
+  const lessC = [change - 100, change - 10, change - 500, change - 1000, change - 50].filter(v => v > 0).slice(0, 2);
+  const moreC = [change + 100, change + 10, change + 500, change + 1000, change + 50].slice(0, 3 - lessC.length);
   setScreen(info);   // show the amount before the change buttons appear
   const given = await new Promise(resolve => {
     T.actions.replaceChildren();
@@ -1523,7 +1537,7 @@ async function payGift(c) {
   await new Promise(resolve => {
     T.actions.replaceChildren();
     let left = c.pay.certs.length;
-    c.pay.certs.forEach(v => {
+    [...c.pay.certs].sort((a, b) => b - a).forEach(v => {
       const e = document.createElement('button');
       e.type = 'button'; e.className = 'tbtn cert'; e.textContent = 'ギフト券 ' + yen(v);
       e.addEventListener('click', () => {
