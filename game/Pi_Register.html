@@ -326,6 +326,8 @@ h2.big{margin:0;font-family:var(--font-display);font-weight:400;font-size:34px;l
 .jan-num{display:flex;gap:.6em}
 .jan-num span{display:inline-block}
 .tbtn.q4{flex:1 1 calc(50% - 6px)}
+/* room under the start button so the floating Safari address bar never covers it */
+#start{padding-bottom:calc(72px + env(safe-area-inset-bottom,0px))}
 </style>
 
 <div id="app">
