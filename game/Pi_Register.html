@@ -328,6 +328,37 @@ h2.big{margin:0;font-family:var(--font-display);font-weight:400;font-size:34px;l
 .tbtn.q4{flex:1 1 calc(50% - 6px)}
 /* room under the start button so the floating Safari address bar never covers it */
 #start{padding-bottom:calc(72px + env(safe-area-inset-bottom,0px))}
+/* ---------- title screen: compact so it fits without scrolling on a phone ---------- */
+#start{gap:10px;padding-block:4px}
+#start .jan{margin-bottom:2px}
+#start .jan-bars{height:34px}
+#start .jan-num{font-size:11px}
+#start h1{font-size:clamp(34px,10.5vw,44px)}
+#start .sub{margin:0;font-size:13px}
+#start .how{gap:8px;padding:10px}
+#start .how-row{grid-template-columns:44px 1fr;gap:10px}
+#start .how-ico{min-height:40px}
+#start .how-row p{font-size:12.5px;line-height:1.45}
+#start .how-pay svg{width:19px;height:19px}
+#start .item.mini{transform:scale(.8)}
+#start .days legend{margin-bottom:4px;font-size:13px}
+#start .note{margin:0;font-size:12px;line-height:1.45}
+#start .chip span{min-height:40px;padding-block:6px}
+#start #btnStart{height:52px}
+/* extra payment details only when the screen is tall enough to keep the title screen scroll-free */
+#start .more-txt{display:none}
+@media (min-height:800px){#start .more-txt{display:inline}}
+#btnCpList{width:100%;height:44px;flex:none}
+.reg-list{background:var(--surface);color:var(--ink);border:2px solid var(--line);border-radius:10px;padding:6px 10px;max-height:clamp(96px,26dvh,220px);overflow-y:auto;font-size:13px;font-weight:700}
+.reg-row{display:grid;grid-template-columns:1fr auto 4.5em;gap:8px;padding:3px 0;border-bottom:1px dashed var(--line)}
+.reg-row b{text-align:right;font-weight:900}
+.reg-sum{border-bottom:0;font-weight:900}
+.coupon-actions{flex-wrap:wrap}
+/* the registered-items viewer sits outside the coupon frame and only shows while the coupon is on screen */
+.reg-box{display:none}
+#couponBox:not([hidden]) + .reg-box{display:grid;gap:6px;margin-top:8px}
+/* it is a game: no text selection, no long-press callout (links/images/text) */
+body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 </style>
 
 <div id="app">
@@ -349,7 +380,7 @@ h2.big{margin:0;font-family:var(--font-display);font-weight:400;font-size:34px;l
       </div>
       <div class="how-row">
         <div class="how-ico"><div class="how-pay" id="howPay"></div></div>
-        <p><b>お支払い</b>はお客さんの希望どおりに。現金はおつり、電子マネーは種類の選択(Suica・PASMOなどは交通系IC)、ギフト券、ポイント払いは利用額の入力。クレジットやタッチはお客様が操作します。袋や箸などの希望にも応え、お酒は年齢確認をしてから。POSAカードの購入や電子マネーのチャージのお客様もいます。最後にレシートか領収書を発行します。クーポンは条件と有効期限を確かめてから。</p>
+        <p><b>お支払い</b>はお客様の希望どおりに。現金はおつり、電子マネーは種類を選択(Suica・PASMOなどは交通系IC)、ポイント払いは利用額を入力。お酒は年齢確認、袋や箸の希望にも応えます。POSAカード購入・チャージ・クーポン・領収書にも対応。<span class="more-txt">クレジットはお客様が端末を操作します(タッチ決済や暗証番号の入力、忘れてしまう人も)。QRコードは基本こちらが読み取ります。ギフト券はおつりが出ず、不足分は現金でいただきます。残高不足のときは、チャージか別の支払い方法かを選んでもらいます。最後はレシートか領収書かを間違えないように。</span></p>
       </div>
     </div>
 
@@ -357,8 +388,7 @@ h2.big{margin:0;font-family:var(--font-display);font-weight:400;font-size:34px;l
       <legend>勤務日数</legend>
       <div class="chips" id="chips"></div>
     </fieldset>
-    <p class="note">ランクは速さと正確さで決まり、S は1日あたりミス1回以下、SS以上はノーミスが条件です。</p>
-    <p class="note">1日は 9:00〜17:00 の勤務(実時間90秒)。<span id="bestNote"></span></p>
+    <p class="note">ランクは速さと正確さで決まり、Sは1日ミス1回以下、SS以上はノーミス。1日は9:00〜17:00の勤務(実時間90秒)。<span id="bestNote"></span></p>
     <button id="btnStart" class="flow" type="button">出勤する</button>
   </section>
 
@@ -447,6 +477,10 @@ h2.big{margin:0;font-family:var(--font-display);font-weight:400;font-size:34px;l
             <button type="button" class="tbtn" id="btnCpYes">受け入れる</button>
             <button type="button" class="tbtn ghost" id="btnCpNo">お断りする</button>
           </div>
+        </div>
+        <div class="reg-box" id="regBox">
+          <button type="button" class="tbtn ghost" id="btnCpList">登録商品を見る</button>
+          <div class="reg-list" id="cpList" hidden></div>
         </div>
         <div class="coupon" id="pcBox" hidden>
           <div class="coupon-head"><span>POINT CARD</span><span id="pcName"></span></div>
@@ -601,7 +635,7 @@ const PS = { box: $('#psBox'), sub: $('#psSub'), main: $('#psMain'), cond: $('#p
 const AG = { box: $('#agBox'), main: $('#agMain'), cond: $('#agCond'), card: $('#idCard'), photo: $('#idPhoto'), name: $('#idName'), birth: $('#idBirth') };
 const EX = { box: $('#exBox'), grid: $('#exGrid'), sub: $('#exSub') };
 const PC = { box: $('#pcBox'), name: $('#pcName'), sub: $('#pcSub') };
-const CP = { box: $('#couponBox'), main: $('#cpMain'), cond: $('#cpCond'), exp: $('#cpExp') };
+const CP = { box: $('#couponBox'), main: $('#cpMain'), cond: $('#cpCond'), exp: $('#cpExp'), list: $('#cpList'), btnList: $('#btnCpList') };
 const alive = c => G.running && G.cust === c;
 const nap = async (c, ms) => { await sleep(ms); return alive(c); };
 
@@ -671,7 +705,7 @@ function genCoupon(list, total) {
   const now = new Date();
   const md = dt => (dt.getMonth() + 1) + '/' + dt.getDate();
   const shift = n => { const d = new Date(now); d.setDate(d.getDate() + n); return d; };
-  const bcs = [...new Set(list.filter(p => p.bc))];
+  const bcs = [...new Set(list.filter(p => p.bc && p !== BAG))];   // the filler bag is never a coupon item
   const cp = { today: md(now) };
   if (Math.random() < .6) {
     const prod = (Math.random() < .6 && bcs.length) ? pick(bcs) : pick(PKG.filter(p => !list.includes(p)));
@@ -873,7 +907,7 @@ function spawn() {
     mode, posa, charge, posaDone: false,
     card, cardDone: false, usePoint, extra: ex.extra, needs: ex.needs, extraDone: false,
     planAll: Math.random() < .5, planK: rand(.25, .9), plan: null,
-    varDone: false,
+    varDone: false, reg: [],
     method: METHODS[!normal ? 'cash' : usePoint ? 'point' : pickMethod()], needSetup: true, rest: false, sayPrefix: '', phrase: '', pay: null
   };
   if (c.age && !c.age.ok) c.coupon = null;   // keep the basket predictable when alcohol may be removed
@@ -890,7 +924,7 @@ function register(it, how) {
   const D = G.D, c = G.cust;
   D.items++; D.amount += it.prod.p;
   if (how === 'scan') D.scan++; else D.manual++;
-  c.sub += it.prod.p;
+  c.sub += it.prod.p; c.reg.push(it.prod);
   hud(); lcd(it.prod.e + ' ' + it.prod.n + '  ' + yen(it.prod.p)); lcdTotal(c.sub);
 }
 function scanEval(it) {
@@ -1012,7 +1046,7 @@ function buildPhrase(c) {
     cash: '現金で', card: P.tap ? 'クレジットカードのタッチ決済で' : 'クレジットカードで',
     emoney: P.say + 'で', qr: 'QRコード決済で', gift: 'ギフト券で'
   }[m];
-  return (c.rest ? '残りは' : '') + body + 'お願いします';
+  return (c.rest ? 'ポイントを使った残りは' : '') + body + 'お願いします';   // "rest" only ever follows a point payment
 }
 function enterPay(c, soft) {
   if (c.age && !c.ageDone) { enterAge(c); return; }
@@ -1077,6 +1111,7 @@ function decideAge(sell) {
     sfx.ok(); lcd('年齢確認OK'); say('はい');
   } else {
     c.total -= a.sum; c.sub -= a.sum; D.amount -= a.sum; D.items -= a.n; D.scan -= a.n;   // alcohol is voided
+    c.reg = c.reg.filter(p => !ALC.includes(p.n));
     hud(); sfx.ok(); lcd('お酒を取り消しました'); lcdTotal(c.total);
     say(a.type === 'impostor' ? 'うっ…じゃあやめます' : a.noId ? 'そうですよね…やめておきます' : 'そっか、じゃあやめます…');
   }
@@ -1223,8 +1258,20 @@ function enterCoupon(c) {
   CP.main.textContent = c.coupon.title;
   CP.cond.textContent = '条件: ' + c.coupon.cond;
   CP.exp.textContent = '有効期限 ' + c.coupon.exp + '(本日 ' + c.coupon.today + ')';
+  CP.list.hidden = true; CP.btnList.textContent = '登録商品を見る';
   CP.box.hidden = false;
   say('クーポン使えますか？'); lcd('クーポンの条件を確認してください'); lcdTotal(c.total);
+}
+// Show what has been registered so far (alcohol that was refused and vegetables that never registered are not in it).
+function toggleRegList() {
+  const c = G.cust;
+  if (!G.running || !c || c.phase !== 'coupon') return;
+  if (!CP.list.hidden) { CP.list.hidden = true; CP.btnList.textContent = '登録商品を見る'; return; }
+  const g = new Map();
+  c.reg.forEach(p => { const e = g.get(p.n) || { p, n: 0 }; e.n++; g.set(p.n, e); });
+  const rows = [...g.values()].map(e => '<div class="reg-row"><span>' + e.p.e + ' ' + e.p.n + '</span><span>×' + e.n + '</span><b>' + yen(e.p.p * e.n) + '</b></div>').join('');
+  CP.list.innerHTML = rows + '<div class="reg-row reg-sum"><span>合計 ' + c.reg.length + '点</span><span></span><b>' + yen(c.reg.reduce((a, p) => a + p.p, 0)) + '</b></div>';
+  CP.list.hidden = false; CP.btnList.textContent = '登録商品を閉じる'; sfx.pick();
 }
 function decideCoupon(accept) {
   const c = G.cust;
@@ -1382,7 +1429,7 @@ async function payCharge(c) {
     'チャージするブランドを選んでください\n(iD・QUICPayはチャージ不可)', '', true);
   T.name.textContent = 'チャージ(' + ch.brand + ')';
   const amt = await askChargeAmount(c, 1000, ch.amount, ch.say);
-  await takeCash(c, amt, 'チャージ金額');
+  await takeCash(c, amt, 'チャージ金額', true);
   if (!alive(c)) return;
   sfx.ok(); setScreen('チャージ完了\n' + yen(amt));
   await nap(c, 700);
@@ -1411,7 +1458,7 @@ async function payEmoney(c) {
         say('あ、足りない…' + ps, true);
         await ask(c, [{ t: 'チャージを受け付ける' }], msg, 'err');
         const amt = await askChargeAmount(c, min, target, ps);
-        await takeCash(c, amt, 'チャージ金額');
+        await takeCash(c, amt, 'チャージ金額', true);
         if (!alive(c)) return;
         setScreen('チャージ中…');
         if (!await nap(c, 800)) return;
@@ -1458,12 +1505,12 @@ async function payQr(c) {
   }
 }
 // Cash: the customer hands over money, the cashier picks the correct change.
-async function takeCash(c, total, label) {
+async function takeCash(c, total, label, bigNote) {
   const up = u => Math.ceil(total / u) * u;
   const r = Math.random();
   let tender = r < .15 ? total : r < .5 ? up(100) : r < .9 ? up(1000) : up(1000) + pick([1000, 4000]);
   if (tender < total) tender = up(1000);
-  if (label) {                                       // top-ups are often paid with a larger note
+  if (bigNote) {                                     // top-ups are often paid with a larger note
     const bigger = [5000, 10000].filter(v => v > total);
     tender = (Math.random() < .35 || !bigger.length) ? total : pick(bigger);
   }
@@ -1476,8 +1523,9 @@ async function takeCash(c, total, label) {
     await nap(c, 700);
     return;
   }
-  // Fixed distractors (no randomness): two below, one above (more below/above if the change is tiny).
-  const lessC = [change - 100, change - 10, change - 500, change - 1000, change - 50].filter(v => v > 0).slice(0, 2);
+  // Always 4 keys, in ascending order. How many wrong amounts lie below the answer varies (0-3), so the answer can
+  // be at any position, including the bottom-right one. The wrong amounts themselves come from a fixed list.
+  const lessC = [change - 100, change - 10, change - 500, change - 1000, change - 50].filter(v => v > 0).slice(0, ri(0, 3));
   const moreC = [change + 100, change + 10, change + 500, change + 1000, change + 50].slice(0, 3 - lessC.length);
   setScreen(info);   // show the amount before the change buttons appear
   const given = await new Promise(resolve => {
@@ -1555,10 +1603,10 @@ async function payGift(c) {
   const short = c.total - got;
   if (short > 0) {
     say('足りない分は現金で', true);
-    await ask(c, [
-      { t: '不足 ' + yen(short) + ' を現金で受け取る' },
-      { t: 'そのまま会計を完了', wrong: true, why: '不足分が未回収です' }
-    ], 'ギフト券 ' + yen(got) + '\n不足 ' + yen(short), 'warn', true);
+    setScreen('ギフト券 ' + yen(got) + '\n不足 ' + yen(short));
+    await nap(c, 700);
+    if (!alive(c)) return;
+    await takeCash(c, short, '不足分');                  // the cash for the shortage may need change too
   } else {
     await ask(c, [
       { t: '会計を完了する' },
@@ -1804,6 +1852,7 @@ function buildGame() {
   $('#btnAgNo').addEventListener('click', () => decideAge(false));
   $('#btnCpYes').addEventListener('click', () => decideCoupon(true));
   $('#btnCpNo').addEventListener('click', () => decideCoupon(false));
+  $('#btnCpList').addEventListener('click', toggleRegList);
   el.belt.addEventListener('pointerdown', tryFlow);
   el.sound.addEventListener('click', () => { sound = !sound; el.sound.textContent = sound ? '音 ON' : '音 OFF'; });
 }
