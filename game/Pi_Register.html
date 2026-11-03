@@ -277,7 +277,7 @@ h2.big{margin:0;font-family:var(--font-display);font-weight:400;font-size:34px;l
 .panel{display:flex;flex-direction:column}
 #panelItems,#panelPay{flex:0 0 auto}
 #btnFlow{flex:0 0 auto;height:clamp(56px,9vh,76px);height:clamp(56px,9dvh,76px);font-size:clamp(18px,5vw,21px)}
-.picker{flex:0 0 auto;grid-auto-rows:clamp(54px,8.5vh,72px);grid-auto-rows:clamp(54px,8.5dvh,72px)}
+.picker{flex:0 0 auto;grid-auto-rows:minmax(clamp(54px,8.5vh,72px),auto);grid-auto-rows:minmax(clamp(54px,8.5dvh,72px),auto)}
 .pick .e{font-size:clamp(22px,6vw,28px)}
 .pick .n{font-size:clamp(10px,3vw,12px)}
 .pick .p{font-size:clamp(9px,2.7vw,11px)}
@@ -317,11 +317,14 @@ h2.big{margin:0;font-family:var(--font-display);font-weight:400;font-size:34px;l
 /* ---------- wide & short screens (iPad landscape, desktop): belt on the left, controls on the right ---------- */
 @media (min-width:760px) and (min-aspect-ratio:5/4){
   #app{max-width:1080px}
-  #game:not([hidden]){display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:auto auto auto 1fr;column-gap:12px;row-gap:8px}
+  #game:not([hidden]){display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:auto auto auto auto 1fr;column-gap:12px;row-gap:8px}
   #game > .hud{grid-column:1;grid-row:1}
   #game > .stage{grid-column:1;grid-row:2}
   #game > .lcd{grid-column:1;grid-row:3}
   #game > .panel{grid-column:2;grid-row:1 / -1;min-height:0}
+  /* the 流す button lives under the belt on the left; the vegetable keys stay on the right */
+  #game > #btnFlow{grid-column:1;grid-row:4;height:clamp(64px,11dvh,96px)}
+  #game:has(#panelItems[hidden]) > #btnFlow{display:none}
 }
 .jan-num{display:flex;gap:.6em}
 .jan-num span{display:inline-block}
@@ -359,6 +362,10 @@ h2.big{margin:0;font-family:var(--font-display);font-weight:400;font-size:34px;l
 #couponBox:not([hidden]) + .reg-box{display:grid;gap:6px;margin-top:8px}
 /* it is a game: no text selection, no long-press callout (links/images/text) */
 body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+/* tight line-heights so emoji + name + price always fit inside a key (wide screens use the largest font sizes) */
+.pick{justify-content:center;padding:3px 2px}
+.pick .e{line-height:1.1}
+.pick .n,.pick .p{line-height:1.2}
 </style>
 
 <div id="app">
@@ -575,34 +582,62 @@ function pickKind() {
 
 /* ---------- sound ---------- */
 let sound = true, AC = null;
+/* Audio keeps working after the page was backgrounded, a call ended, or the earphones / output device changed:
+   iOS leaves the context "suspended"/"interrupted" (or silently dead), so we resume it, and rebuild it when it won't resume. */
+function newAC() {
+  const ctx = new (window.AudioContext || window.webkitAudioContext)();
+  ctx.onstatechange = () => { if (ctx === AC && ctx.state !== 'running' && ctx.state !== 'closed') { try { ctx.resume().catch(() => {}); } catch (e) {} } };
+  return ctx;
+}
+function resetAC() {                       // throw the context away; the next sound (or tap) builds a fresh one
+  const old = AC; AC = null;
+  if (old) { try { old.close().catch(() => {}); } catch (e) {} }
+}
+// Run fn(ctx) once a running context is available.
+function withAC(fn) {
+  try {
+    if (!AC || AC.state === 'closed') AC = newAC();
+    const ctx = AC;
+    if (ctx.state === 'running') { fn(ctx); return; }
+    ctx.resume().then(() => { if (ctx.state === 'running') fn(ctx); else throw new Error('stuck'); }).catch(() => {
+      resetAC();                           // won't resume: start over with a new context
+      try { AC = newAC(); const c2 = AC; c2.resume().then(() => fn(c2)).catch(() => {}); } catch (e) {}
+    });
+  } catch (e) {}
+}
+// iOS needs a user gesture to (re)start audio: every tap re-arms it with a silent blip.
+function unlockAC() {
+  withAC(ctx => { try { const b = ctx.createBuffer(1, 1, 22050), s = ctx.createBufferSource(); s.buffer = b; s.connect(ctx.destination); s.start(0); } catch (e) {} });
+}
+['pointerdown', 'touchend', 'click', 'keydown'].forEach(t => window.addEventListener(t, () => { if (sound) unlockAC(); }, { capture: true, passive: true }));
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') resetAC(); else if (AC) { try { AC.suspend(); } catch (e) {} } });
+window.addEventListener('pageshow', () => resetAC());
+window.addEventListener('focus', () => { if (AC && AC.state !== 'running') { try { AC.resume().catch(() => {}); } catch (e) {} } });
+if (navigator.mediaDevices && navigator.mediaDevices.addEventListener) navigator.mediaDevices.addEventListener('devicechange', () => resetAC());
 function tone(f, d, type, v, when) {
   if (!sound) return;
-  try {
-    AC = AC || new (window.AudioContext || window.webkitAudioContext)();
-    if (AC.state === 'suspended') AC.resume();
-    const o = AC.createOscillator(), g = AC.createGain(), t = AC.currentTime + (when || 0);
+  withAC(ctx => {
+    const o = ctx.createOscillator(), g = ctx.createGain(), t = ctx.currentTime + (when || 0);
     o.type = type; o.frequency.value = f;
-    o.connect(g); g.connect(AC.destination);
+    o.connect(g); g.connect(ctx.destination);
     g.gain.setValueAtTime(v, t);
     g.gain.exponentialRampToValueAtTime(.0001, t + d);
     o.start(t); o.stop(t + d + .02);
-  } catch (e) {}
+  });
 }
 // Pure sine beep with short ramps (avoids clicks).
 function sine(f, start, dur, vol) {
   if (!sound) return;
-  try {
-    AC = AC || new (window.AudioContext || window.webkitAudioContext)();
-    if (AC.state === 'suspended') AC.resume();
-    const o = AC.createOscillator(), g = AC.createGain(), t = AC.currentTime + start;
+  withAC(ctx => {
+    const o = ctx.createOscillator(), g = ctx.createGain(), t = ctx.currentTime + start;
     o.type = 'sine'; o.frequency.value = f;
-    o.connect(g); g.connect(AC.destination);
+    o.connect(g); g.connect(ctx.destination);
     g.gain.setValueAtTime(.0001, t);
     g.gain.linearRampToValueAtTime(vol, t + .01);
     g.gain.setValueAtTime(vol, t + dur - .01);
     g.gain.linearRampToValueAtTime(.0001, t + dur);
     o.start(t); o.stop(t + dur + .02);
-  } catch (e) {}
+  });
 }
 const sfx = {
   // Contactless success tone: 1500 Hz sine, about 500 ms.
@@ -1865,6 +1900,17 @@ $('#btnStart').addEventListener('click', () => {
 
 buildStart();
 buildGame();
+// In the two-column (wide) layout the 流す button moves under the belt on the left; otherwise it stays at the top of the panel.
+{
+  const mq = window.matchMedia('(min-width:760px) and (min-aspect-ratio:5/4)');
+  const placeFlow = () => {
+    const f = $('#btnFlow');
+    if (mq.matches) el.game.insertBefore(f, el.game.querySelector(':scope > .panel'));
+    else el.panelItems.insertBefore(f, el.panelItems.firstChild);
+  };
+  if (mq.addEventListener) mq.addEventListener('change', placeFlow); else mq.addListener(placeFlow);
+  placeFlow();
+}
 requestAnimationFrame(frame);
 })();
 </script>
