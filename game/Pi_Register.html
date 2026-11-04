@@ -366,10 +366,35 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 .pick{justify-content:center;padding:3px 2px}
 .pick .e{line-height:1.1}
 .pick .n,.pick .p{line-height:1.2}
+/* share: dot (pixel) style */
+#start{position:relative}
+.share-top{position:absolute;top:4px;right:4px;width:44px;height:44px;border:0;border-radius:0;background:var(--surface);color:var(--ink);display:grid;place-items:center;cursor:pointer;z-index:1;
+  box-shadow:0 -3px 0 0 var(--ink),0 3px 0 0 var(--ink),-3px 0 0 0 var(--ink),3px 0 0 0 var(--ink),3px 6px 0 0 var(--line)}
+.share-top:active{transform:translate(2px,2px);box-shadow:0 -3px 0 0 var(--ink),0 3px 0 0 var(--ink),-3px 0 0 0 var(--ink),3px 0 0 0 var(--ink)}
+.share-top svg{image-rendering:pixelated}
+.share-ov{z-index:60}
+#shareOv .card{border:0;border-radius:0;background:var(--surface);gap:14px;
+  box-shadow:0 -4px 0 0 var(--ink),0 4px 0 0 var(--ink),-4px 0 0 0 var(--ink),4px 0 0 0 var(--ink),8px 8px 0 0 rgba(0,0,0,.35)}
+#shareOv .big{font-family:var(--font-display);font-weight:400;letter-spacing:.08em}
+.share-text{margin:0;font-size:13px;font-weight:700;color:var(--muted);white-space:pre-wrap;word-break:break-all}
+.share-msg{margin:0;min-height:1.2em;font-size:13px;font-weight:700;color:var(--accent)}
+.sns-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.sns-btn,#shareOv .btn2{border:0;border-radius:0;background:var(--surface-2);color:var(--ink);text-decoration:none;font-family:var(--font-display);font-weight:400;letter-spacing:.04em;
+  box-shadow:0 -3px 0 0 var(--ink),0 3px 0 0 var(--ink),-3px 0 0 0 var(--ink),3px 0 0 0 var(--ink),3px 7px 0 0 var(--line)}
+.sns-btn{display:grid;justify-items:center;gap:6px;padding:12px 4px 8px;font-size:13px;margin:3px}
+.sns-btn:active,#shareOv .btn2:active{transform:translate(2px,2px);box-shadow:0 -3px 0 0 var(--ink),0 3px 0 0 var(--ink),-3px 0 0 0 var(--ink),3px 0 0 0 var(--ink)}
+#shareOv .btn2{margin:4px 3px;min-height:46px;font-size:15px}
+#shareOv .btns{gap:14px}
+.sns-mark{width:44px;height:44px;border-radius:0;display:grid;place-items:center;color:#fff;font-family:var(--font-display);font-size:24px;line-height:1;
+  clip-path:polygon(0 4px,4px 4px,4px 0,calc(100% - 4px) 0,calc(100% - 4px) 4px,100% 4px,100% calc(100% - 4px),calc(100% - 4px) calc(100% - 4px),calc(100% - 4px) 100%,4px 100%,4px calc(100% - 4px),0 calc(100% - 4px))}
+.sns-mark.sns-sm{font-size:13px}
+.sns-mark svg{image-rendering:pixelated}
+#shareOv textarea{-webkit-user-select:text;user-select:text}
 </style>
 
 <div id="app">
   <section id="start" class="screen">
+    <button id="btnShare" class="share-top" type="button" aria-label="共有する"><svg viewBox="0 0 11 11" width="22" height="22" shape-rendering="crispEdges" fill="currentColor" aria-hidden="true"><rect x="8" y="0" width="1" height="1"/><rect x="9" y="0" width="1" height="1"/><rect x="10" y="0" width="1" height="1"/><rect x="8" y="1" width="1" height="1"/><rect x="9" y="1" width="1" height="1"/><rect x="10" y="1" width="1" height="1"/><rect x="6" y="2" width="1" height="1"/><rect x="7" y="2" width="1" height="1"/><rect x="8" y="2" width="1" height="1"/><rect x="9" y="2" width="1" height="1"/><rect x="10" y="2" width="1" height="1"/><rect x="5" y="3" width="1" height="1"/><rect x="0" y="4" width="1" height="1"/><rect x="1" y="4" width="1" height="1"/><rect x="2" y="4" width="1" height="1"/><rect x="3" y="4" width="1" height="1"/><rect x="4" y="4" width="1" height="1"/><rect x="0" y="5" width="1" height="1"/><rect x="1" y="5" width="1" height="1"/><rect x="2" y="5" width="1" height="1"/><rect x="0" y="6" width="1" height="1"/><rect x="1" y="6" width="1" height="1"/><rect x="2" y="6" width="1" height="1"/><rect x="3" y="6" width="1" height="1"/><rect x="4" y="6" width="1" height="1"/><rect x="5" y="7" width="1" height="1"/><rect x="6" y="8" width="1" height="1"/><rect x="7" y="8" width="1" height="1"/><rect x="8" y="8" width="1" height="1"/><rect x="9" y="8" width="1" height="1"/><rect x="10" y="8" width="1" height="1"/><rect x="8" y="9" width="1" height="1"/><rect x="9" y="9" width="1" height="1"/><rect x="10" y="9" width="1" height="1"/><rect x="8" y="10" width="1" height="1"/><rect x="9" y="10" width="1" height="1"/><rect x="10" y="10" width="1" height="1"/></svg></button>
     <div class="brand">
       <div class="jan" aria-hidden="true"><div class="jan-bars" id="janBars"></div><div class="jan-num"><span>4</span><span>901234</span><span>567894</span></div></div>
       <h1>ピッとレジ</h1>
@@ -1827,9 +1852,81 @@ function showFinal() {
     '</tbody><tfoot><tr><td>合計</td><td>' + tot.cust + '</td><td>' + tot.items + '</td><td>' + yen(tot.amount) + '</td><td>' + tot.miss + '</td><td>' + sc.score + '</td></tr></tfoot></table></div>' +
     '<p class="note">' + (isBest ? '自己ベスト更新！(' + G.days + '日間の総合スコア)' : G.days + '日間の自己ベスト ' + Math.max(prev, sc.score) + '点') + '</p>' +
     '<div class="btns"><button id="ovAgain" class="flow" type="button">同じ日数でもう一度</button>' +
+    '<button id="ovShare" class="btn2" type="button">結果を共有する</button>' +
     '<button id="ovBack" class="btn2" type="button">日数を選びなおす</button></div>');
+  $('#ovShare').addEventListener('click', () => shareThis('result', { days: G.days, rank, score: sc.score, cust: tot.cust, miss: tot.miss }));
   $('#ovAgain').addEventListener('click', () => { closeOv(); G.day = 0; G.log = []; intro(); });
   $('#ovBack').addEventListener('click', () => { closeOv(); showStart(); });
+}
+
+/* ---------- sharing ---------- */
+// One share screen with a button per SNS. (The marks are simple generic glyphs, not the official logos.)
+function shareUrl() { return location.href.split('#')[0]; }
+function shareText(kind, r) {
+  if (kind === 'result') {
+    return 'ピッとレジ ' + r.days + '日間の成績: ランク' + r.rank + '(' + r.score + '点)。客' + r.cust + '人、ミス' + r.miss + '回。 #ピッとレジ';
+  }
+  return 'ピッとレジ - スーパーのレジ係ゲーム。バーコードをスキャン、野菜は選んで登録、お客さんの支払いにも対応! #ピッとレジ';
+}
+function shareThis(kind, r) { openShareMenu(shareText(kind, r), shareUrl()); }
+function copyText(t) {
+  if (navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(t);
+  return new Promise((ok, ng) => {
+    const ta = document.createElement('textarea'); ta.value = t; ta.style.cssText = 'position:fixed;opacity:0;left:-9999px';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy') ? ok() : ng(); } catch (e) { ng(); } finally { ta.remove(); }
+  });
+}
+const SNS_MARK = {
+  x: '<span class="sns-mark" style="background:#111">X</span>',
+  line: '<span class="sns-mark sns-sm" style="background:#06c755">LINE</span>',
+  facebook: '<span class="sns-mark" style="background:#1877f2">f</span>',
+  instagram: '<span class="sns-mark" style="background:#c13584"><svg viewBox="0 0 12 9" width="28" height="21" shape-rendering="crispEdges" fill="#fff" aria-hidden="true"><rect x="3" y="0" width="1" height="1"/><rect x="4" y="0" width="1" height="1"/><rect x="5" y="0" width="1" height="1"/><rect x="6" y="0" width="1" height="1"/><rect x="0" y="1" width="1" height="1"/><rect x="1" y="1" width="1" height="1"/><rect x="2" y="1" width="1" height="1"/><rect x="3" y="1" width="1" height="1"/><rect x="4" y="1" width="1" height="1"/><rect x="5" y="1" width="1" height="1"/><rect x="6" y="1" width="1" height="1"/><rect x="7" y="1" width="1" height="1"/><rect x="8" y="1" width="1" height="1"/><rect x="9" y="1" width="1" height="1"/><rect x="10" y="1" width="1" height="1"/><rect x="11" y="1" width="1" height="1"/><rect x="0" y="2" width="1" height="1"/><rect x="11" y="2" width="1" height="1"/><rect x="0" y="3" width="1" height="1"/><rect x="4" y="3" width="1" height="1"/><rect x="5" y="3" width="1" height="1"/><rect x="6" y="3" width="1" height="1"/><rect x="7" y="3" width="1" height="1"/><rect x="11" y="3" width="1" height="1"/><rect x="0" y="4" width="1" height="1"/><rect x="3" y="4" width="1" height="1"/><rect x="8" y="4" width="1" height="1"/><rect x="11" y="4" width="1" height="1"/><rect x="0" y="5" width="1" height="1"/><rect x="3" y="5" width="1" height="1"/><rect x="8" y="5" width="1" height="1"/><rect x="11" y="5" width="1" height="1"/><rect x="0" y="6" width="1" height="1"/><rect x="4" y="6" width="1" height="1"/><rect x="5" y="6" width="1" height="1"/><rect x="6" y="6" width="1" height="1"/><rect x="7" y="6" width="1" height="1"/><rect x="11" y="6" width="1" height="1"/><rect x="0" y="7" width="1" height="1"/><rect x="11" y="7" width="1" height="1"/><rect x="0" y="8" width="1" height="1"/><rect x="1" y="8" width="1" height="1"/><rect x="2" y="8" width="1" height="1"/><rect x="3" y="8" width="1" height="1"/><rect x="4" y="8" width="1" height="1"/><rect x="5" y="8" width="1" height="1"/><rect x="6" y="8" width="1" height="1"/><rect x="7" y="8" width="1" height="1"/><rect x="8" y="8" width="1" height="1"/><rect x="9" y="8" width="1" height="1"/><rect x="10" y="8" width="1" height="1"/><rect x="11" y="8" width="1" height="1"/></svg></span>',
+  threads: '<span class="sns-mark" style="background:#111">@</span>',
+  discord: '<span class="sns-mark" style="background:#5865f2"><svg viewBox="0 0 12 8" width="28" height="18" shape-rendering="crispEdges" fill="#fff" aria-hidden="true"><rect x="1" y="0" width="1" height="1"/><rect x="2" y="0" width="1" height="1"/><rect x="3" y="0" width="1" height="1"/><rect x="4" y="0" width="1" height="1"/><rect x="5" y="0" width="1" height="1"/><rect x="6" y="0" width="1" height="1"/><rect x="7" y="0" width="1" height="1"/><rect x="8" y="0" width="1" height="1"/><rect x="9" y="0" width="1" height="1"/><rect x="10" y="0" width="1" height="1"/><rect x="0" y="1" width="1" height="1"/><rect x="11" y="1" width="1" height="1"/><rect x="0" y="2" width="1" height="1"/><rect x="3" y="2" width="1" height="1"/><rect x="4" y="2" width="1" height="1"/><rect x="7" y="2" width="1" height="1"/><rect x="8" y="2" width="1" height="1"/><rect x="11" y="2" width="1" height="1"/><rect x="0" y="3" width="1" height="1"/><rect x="3" y="3" width="1" height="1"/><rect x="4" y="3" width="1" height="1"/><rect x="7" y="3" width="1" height="1"/><rect x="8" y="3" width="1" height="1"/><rect x="11" y="3" width="1" height="1"/><rect x="0" y="4" width="1" height="1"/><rect x="11" y="4" width="1" height="1"/><rect x="1" y="5" width="1" height="1"/><rect x="2" y="5" width="1" height="1"/><rect x="3" y="5" width="1" height="1"/><rect x="4" y="5" width="1" height="1"/><rect x="5" y="5" width="1" height="1"/><rect x="6" y="5" width="1" height="1"/><rect x="7" y="5" width="1" height="1"/><rect x="8" y="5" width="1" height="1"/><rect x="9" y="5" width="1" height="1"/><rect x="10" y="5" width="1" height="1"/><rect x="2" y="6" width="1" height="1"/><rect x="3" y="6" width="1" height="1"/><rect x="4" y="6" width="1" height="1"/><rect x="3" y="7" width="1" height="1"/></svg></span>'
+};
+function openShareMenu(text, url) {
+  const old = document.querySelector('#shareOv'); if (old) old.remove();
+  const enc = encodeURIComponent, w = document.createElement('div');
+  w.id = 'shareOv'; w.className = 'overlay share-ov';
+  const both = text + ' ' + url;
+  const items = [
+    ['x', 'X', 'https://x.com/intent/post?text=' + enc(text) + '&url=' + enc(url)],
+    ['line', 'LINE', 'https://social-plugins.line.me/lineit/share?url=' + enc(url) + '&text=' + enc(text)],
+    ['facebook', 'Facebook', 'https://www.facebook.com/sharer/sharer.php?u=' + enc(url) + '&quote=' + enc(text)],
+    ['instagram', 'Instagram', 'https://www.instagram.com/'],            // no web share link exists: copy the text, then open Instagram
+    ['threads', 'Threads', 'https://www.threads.com/intent/post?text=' + enc(text) + '&url=' + enc(url)],
+    ['discord', 'Discord', 'https://discord.com/app']                   // no web share link either: copy the text, then open Discord
+  ];
+  w.innerHTML = '<div class="card" role="dialog" aria-modal="true" aria-label="共有する"><h2 class="big">共有する</h2><p class="share-text"></p><div class="sns-grid"></div><p class="share-msg" aria-live="polite"></p>' +
+    '<div class="btns"><button type="button" class="btn2" id="shCopy">リンクと文面をコピー</button>' +
+    (navigator.share ? '<button type="button" class="btn2" id="shOther">端末の共有メニューを使う</button>' : '') +
+    '<button type="button" class="btn2" id="shClose">閉じる</button></div></div>';
+  w.querySelector('.share-text').textContent = text;
+  const msg = w.querySelector('.share-msg');
+  const grid = w.querySelector('.sns-grid');
+  items.forEach(([id, name, href]) => {
+    const a = document.createElement('a');
+    a.className = 'sns-btn'; a.href = href; a.target = '_blank'; a.rel = 'noopener noreferrer';
+    a.innerHTML = SNS_MARK[id] + '<span>' + name + '</span>';
+    if (id === 'instagram' || id === 'discord') a.addEventListener('click', () => {
+      const dest = id === 'instagram' ? 'Instagramの投稿やストーリーズ' : 'Discordのチャンネルやメッセージ';
+      copyText(both).then(() => { msg.textContent = '文面とリンクをコピーしました。' + dest + 'に貼り付けてください。'; },
+                          () => { msg.textContent = 'コピーできませんでした。文面を長押ししてコピーしてください。'; });
+    });
+    grid.appendChild(a);
+  });
+  document.body.appendChild(w);
+  const close = () => w.remove();
+  w.addEventListener('click', e => { if (e.target === w) close(); });
+  w.querySelector('#shClose').addEventListener('click', close);
+  w.querySelector('#shCopy').addEventListener('click', () => {
+    copyText(both).then(() => { msg.textContent = 'コピーしました。'; }, () => { msg.textContent = 'コピーできませんでした。'; });
+  });
+  const other = w.querySelector('#shOther');
+  if (other) other.addEventListener('click', async () => {
+    try { await navigator.share({ title: 'ピッとレジ', text, url }); } catch (e) { /* cancelled */ }
+  });
 }
 
 /* ---------- start screen ---------- */
@@ -1891,6 +1988,7 @@ function buildGame() {
   el.belt.addEventListener('pointerdown', tryFlow);
   el.sound.addEventListener('click', () => { sound = !sound; el.sound.textContent = sound ? '音 ON' : '音 OFF'; });
 }
+$('#btnShare').addEventListener('click', () => shareThis('top'));
 $('#btnStart').addEventListener('click', () => {
   const r = document.querySelector('input[name="days"]:checked');
   G.days = r ? +r.value : 3; G.day = 0; G.log = [];
